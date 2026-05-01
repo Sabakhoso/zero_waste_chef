@@ -9,59 +9,33 @@
     <style>
         :root { --bg: #050a15; --emerald: #10b981; --accent: #34d399; --glass: rgba(15, 23, 42, 0.95); }
         body { background: var(--bg); color: #f8fafc; font-family: 'Syne', sans-serif; margin: 0; overflow: hidden; }
-        
         .app-container { display: flex; height: 100vh; width: 100vw; }
-        
-        .recipe-sidebar { 
-            width: 80px; background: rgba(2, 6, 23, 0.95); 
-            border-right: 1px solid rgba(16, 185, 129, 0.1); 
-            display: flex; flex-direction: column; 
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; z-index: 50; overflow: hidden;
-        }
+        .recipe-sidebar { width: 80px; background: rgba(2, 6, 23, 0.95); border-right: 1px solid rgba(16, 185, 129, 0.1); display: flex; flex-direction: column; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 50; overflow: hidden; }
         .recipe-sidebar.expanded { width: 280px; }
-
         .menu-toggle { padding: 1.5rem; cursor: pointer; display: flex; flex-direction: column; gap: 5px; width: fit-content; }
         .menu-toggle div { width: 25px; height: 2px; background: var(--emerald); border-radius: 2px; }
-
         .nav-vertical { display: flex; flex-direction: column; gap: 0.5rem; padding: 0 10px; }
-        .nav-item { display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 12px; cursor: pointer; color: rgba(255,255,255,0.4); min-width: 200px; }
-        .nav-item span.icon { font-size: 1.5rem; min-width: 30px; text-align: center; }
+        .nav-item { display: flex; align-items: center; gap: 1.5rem; padding: 1rem; border-radius: 12px; cursor: pointer; color: rgba(255,255,255,0.4); min-width: 200px; transition: 0.3s; }
+        .nav-item span.icon { font-size: 1.2rem; min-width: 30px; text-align: center; }
         .nav-item span.label { opacity: 0; transition: opacity 0.2s; white-space: nowrap; font-weight: 700; font-size: 0.8rem; }
         .recipe-sidebar.expanded .nav-item span.label { opacity: 1; }
-        .nav-item.active { background: rgba(16, 185, 129, 0.1); color: var(--emerald); }
-
+        .nav-item.active { background: rgba(16, 185, 129, 0.1); color: var(--emerald); box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.05); }
         .main-dashboard { flex: 1; overflow-y: auto; padding: 3rem 4rem; scroll-behavior: smooth; }
-
-        #welcome-screen {
-            position: fixed; inset: 0; z-index: 2000; background: radial-gradient(circle at center, #064e3b, #050a15);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-            transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1);
-        }
-
+        #welcome-screen { position: fixed; inset: 0; z-index: 2000; background: radial-gradient(circle at center, #064e3b, #050a15); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1); }
         .glass-card { background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 2rem; backdrop-filter: blur(12px); }
-        .btn-em { background: var(--emerald); color: white; font-weight: 700; padding: 1rem 2rem; border-radius: 1rem; transition: 0.3s; }
         
-        .list-scroll-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: var(--emerald); animation: bounce 2s infinite; cursor: pointer; }
-        @keyframes bounce { 0%, 100% { bottom: 20px; } 50% { bottom: 25px; } }
+        .btn-em { background: var(--emerald); color: #050a15; font-weight: 800; padding: 1rem 2rem; border-radius: 1rem; transition: 0.3s; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-em:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+        .btn-archive { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.6rem 1.2rem; border-radius: 0.75rem; font-size: 0.7rem; font-weight: 800; transition: 0.3s; }
+        .btn-archive:hover { background: var(--emerald); color: #050a15; }
 
-        /* Assistant Panel & FIXED SEND BUTTON */
-        .ai-panel { 
-            width: 380px; background: var(--glass); position: fixed; right: -380px; top: 0; height: 100vh;
-            transition: 0.4s; z-index: 1000; border-left: 1px solid rgba(16, 185, 129, 0.1);
-            display: flex; flex-direction: column;
-        }
+        .ai-panel { width: 380px; background: var(--glass); position: fixed; right: -380px; top: 0; height: 100vh; transition: 0.4s; z-index: 1000; border-left: 1px solid rgba(16, 185, 129, 0.1); display: flex; flex-direction: column; }
         .ai-panel.open { right: 0; }
-        
         #chat-msgs { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-        
         .chat-input-area { padding: 1.5rem; background: rgba(2, 6, 23, 0.5); border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 0.75rem; align-items: center; }
         #chat-in { flex: 1; background: #0f172a; border: 1px solid #1e293b; border-radius: 0.75rem; padding: 0.75rem 1rem; color: white; font-size: 0.85rem; outline: none; }
-        #chat-in:focus { border-color: var(--emerald); }
         .btn-send { background: var(--emerald); color: #020617; font-weight: 800; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-size: 0.85rem; transition: 0.2s; }
-        .btn-send:hover { background: var(--accent); transform: scale(1.02); }
-
-        #chat-bubble { position: fixed; bottom: 2rem; right: 2rem; width: 3.5rem; height: 3.5rem; background: var(--emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1100; }
+        #chat-bubble { position: fixed; bottom: 2rem; right: 2rem; width: 3.5rem; height: 3.5rem; background: var(--emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1100; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); font-size: 1.5rem; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -81,34 +55,31 @@
                 <div onclick="setTab('trash')" id="nav-trash" class="nav-item"><span class="icon">🗑️</span> <span class="label">Recycle Bin</span></div>
             </nav>
             <div id="recipe-list-container" class="flex-1 overflow-y-auto mt-6 px-2"></div>
-            <div class="list-scroll-btn" onclick="scrollRecipeList()">↓</div>
         </aside>
 
         <main class="main-dashboard">
             <header class="mb-12"><h2 class="text-4xl font-bold">Kitchen <span class="text-emerald-400">Dashboard</span></h2></header>
             <section class="glass-card p-10 mb-10">
-                <textarea id="ing" class="w-full bg-slate-950/40 border border-slate-800 rounded-2xl p-6 text-white outline-none h-40 mb-6" placeholder="List ingredients..."></textarea>
+                <textarea id="ing" class="w-full bg-slate-950/40 border border-slate-800 rounded-2xl p-6 text-white outline-none h-40 mb-6 font-medium" placeholder="What's in your fridge? (e.g. Tomato, Spinach, Pasta)"></textarea>
                 <button onclick="doRecipe()" id="gen-btn" class="btn-em">✦ Generate Creation</button>
             </section>
+            
             <div id="recipe-out" class="glass-card p-10 hidden border-emerald-500/30">
                 <div class="flex justify-between items-start mb-6">
                     <h3 id="r-title" class="text-2xl font-bold text-emerald-400"></h3>
-                    <button onclick="saveCurrentRecipe()" class="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-[10px] font-extrabold">+ Save to Archive</button>
+                    <button onclick="saveCurrentRecipe()" class="btn-archive">+ Save to Archive</button>
                 </div>
-                <div id="r-body" class="whitespace-pre-line opacity-80 text-sm mb-8"></div>
-                <div id="r-tip" class="p-6 bg-emerald-500/5 rounded-2xl text-xs italic text-emerald-400"></div>
+                <div id="r-body" class="whitespace-pre-line opacity-80 text-sm mb-8 leading-relaxed"></div>
+                <div id="r-tip" class="p-6 bg-emerald-500/5 rounded-2xl text-xs italic text-emerald-400 border border-emerald-500/10"></div>
             </div>
         </main>
 
-        <!-- RESTORED SAGE ASSISTANT PANEL -->
         <aside class="ai-panel" id="ai-panel">
             <div class="p-6 border-b border-white/5 flex justify-between items-center bg-slate-900/50">
                 <span class="font-bold text-emerald-400 text-sm">Sage Assistant</span>
                 <button onclick="toggleChat()" class="opacity-30 hover:opacity-100">✕</button>
             </div>
-            
             <div id="chat-msgs"></div>
-
             <div class="chat-input-area">
                 <input id="chat-in" type="text" placeholder="Ask Sage..." onkeydown="if(event.key==='Enter')doChat()">
                 <button onclick="doChat()" class="btn-send">Send</button>
@@ -119,6 +90,7 @@
     <div id="chat-bubble" onclick="toggleChat()">💬</div>
 
 <script>
+    // State management using your existing variables
     let savedRecipes = JSON.parse(localStorage.getItem('savedRecipes')) || [];
     let trashRecipes = JSON.parse(localStorage.getItem('trashRecipes')) || [];
     let currentTab = 'saved';
@@ -131,41 +103,120 @@
             document.getElementById('main-app').classList.remove('hidden');
             renderRecipes();
         }, 600);
-        appendMsg("Hi! I'm Sage. Ready to cook?", 'mb-b');
     }
 
     function toggleSidebar() { document.getElementById('recipe-sidebar').classList.toggle('expanded'); }
     function toggleChat() { document.getElementById('ai-panel').classList.toggle('open'); }
 
-    async function doChat() {
-        const inp = document.getElementById("chat-in");
-        const txt = inp.value.trim();
-        if(!txt) return;
-        appendMsg(txt, 'mb-u');
-        inp.value = "";
-        const res = await fetch("/api/chat", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({messages: [{role:"user", content:txt}]})
-        });
-        const data = await res.json();
-        appendMsg(data.reply, 'mb-b');
+    // TAB SWITCHING
+    function setTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('nav-' + tab).classList.add('active');
+        renderRecipes();
     }
 
-    function appendMsg(txt, cls) {
-        const div = document.createElement("div");
-        div.className = (cls === 'mb-u' ? 'bg-emerald-500 text-black self-end' : 'bg-white/5 text-slate-300 self-start') + " p-3 rounded-2xl max-w-[85%] text-xs";
-        div.innerText = txt;
-        const box = document.getElementById("chat-msgs");
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
+    // CREATE / SAVE
+    function saveCurrentRecipe() {
+        if (!currentRecipeData) return;
+        const exists = savedRecipes.some(r => r.recipe_title === currentRecipeData.recipe_title);
+        if (!exists) {
+            // Add ID for CRUD operations and fav status
+            const recipeToSave = {...currentRecipeData, id: Date.now(), fav: false};
+            savedRecipes.push(recipeToSave);
+            updateStorage();
+            alert("Recipe saved to Archive!");
+            renderRecipes();
+        } else {
+            alert("This recipe is already saved!");
+        }
     }
 
-    // Recipe Logic remains exactly as it was
+    // DYNAMIC VIEWING
+    function viewRecipe(id) {
+        const all = [...savedRecipes, ...trashRecipes];
+        const recipe = all.find(r => r.id === id);
+        if(recipe) {
+            currentRecipeData = recipe;
+            document.getElementById("r-title").innerText = recipe.recipe_title;
+            document.getElementById("r-body").innerText = recipe.recipe_body;
+            document.getElementById("r-tip").innerText = "Tip: " + recipe.waste_tip;
+            document.getElementById("recipe-out").classList.remove("hidden");
+        }
+    }
+
+    // UPDATE: FAVORITE
+    function toggleFavorite(id, event) {
+        event.stopPropagation();
+        const recipe = savedRecipes.find(r => r.id === id);
+        if(recipe) {
+            recipe.fav = !recipe.fav;
+            updateStorage();
+            renderRecipes();
+        }
+    }
+
+    // DELETE / RESTORE
+    function handleAction(id, event, action) {
+        event.stopPropagation();
+        if(action === 'trash') {
+            const idx = savedRecipes.findIndex(r => r.id === id);
+            const item = savedRecipes.splice(idx, 1)[0];
+            trashRecipes.push(item);
+        } else if(action === 'restore') {
+            const idx = trashRecipes.findIndex(r => r.id === id);
+            const item = trashRecipes.splice(idx, 1)[0];
+            savedRecipes.push(item);
+        } else if(action === 'delete') {
+            const idx = trashRecipes.findIndex(r => r.id === id);
+            trashRecipes.splice(idx, 1);
+        }
+        updateStorage();
+        renderRecipes();
+    }
+
+    function updateStorage() {
+        localStorage.setItem('savedRecipes', JSON.stringify(savedRecipes));
+        localStorage.setItem('trashRecipes', JSON.stringify(trashRecipes));
+    }
+
+    // RENDER SIDEBAR LIST (TITLE ONLY)
+    function renderRecipes() {
+        const container = document.getElementById("recipe-list-container");
+        let list = [];
+        
+        if (currentTab === 'saved') list = savedRecipes;
+        else if (currentTab === 'favs') list = savedRecipes.filter(r => r.fav);
+        else if (currentTab === 'trash') list = trashRecipes;
+        
+        if (list.length === 0) {
+            container.innerHTML = `<p class="text-[10px] opacity-30 text-center mt-4">Empty</p>`;
+            return;
+        }
+
+        container.innerHTML = list.map(r => `
+            <div class="group relative bg-white/5 border border-white/5 rounded-lg p-3 mb-2 hover:border-emerald-500/30 transition-all cursor-pointer" onclick="viewRecipe(${r.id})">
+                <p class="text-[10px] font-bold text-emerald-400 truncate pr-10">${r.recipe_title}</p>
+                <div class="absolute right-2 top-2.5 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    ${currentTab !== 'trash' ? `
+                        <button onclick="toggleFavorite(${r.id}, event)" class="text-xs">${r.fav ? '⭐' : '☆'}</button>
+                        <button onclick="handleAction(${r.id}, event, 'trash')" class="text-xs">🗑️</button>
+                    ` : `
+                        <button onclick="handleAction(${r.id}, event, 'restore')" class="text-xs">♻️</button>
+                        <button onclick="handleAction(${r.id}, event, 'delete')" class="text-xs">❌</button>
+                    `}
+                </div>
+            </div>
+        `).join('');
+    }
+
     async function doRecipe() {
         const ing = document.getElementById("ing").value;
         if(!ing) return;
-        document.getElementById("gen-btn").innerText = "Thinking...";
+        const btn = document.getElementById("gen-btn");
+        btn.innerText = "✦ Simmering...";
+        btn.style.opacity = "0.7";
+        
         try {
             const res = await fetch("/api/recipe", {
                 method: "POST",
@@ -178,14 +229,38 @@
             document.getElementById("r-body").innerText = data.recipe_body;
             document.getElementById("r-tip").innerText = "Tip: " + data.waste_tip;
             document.getElementById("recipe-out").classList.remove("hidden");
-        } catch(e) {}
-        finally { document.getElementById("gen-btn").innerText = "✦ Generate Creation"; }
+        } catch(e) {
+            alert("Server error.");
+        } finally { 
+            btn.innerText = "✦ Generate Creation"; 
+            btn.style.opacity = "1";
+        }
     }
 
-    function renderRecipes() {
-        const container = document.getElementById("recipe-list-container");
-        let list = (currentTab === 'saved') ? savedRecipes : (currentTab === 'favs') ? savedRecipes.filter(r => r.fav) : trashRecipes;
-        container.innerHTML = list.map(r => `<div class="bg-white/5 border border-white/5 rounded-lg p-2 mb-2"><p class="text-[10px] font-bold text-emerald-400 truncate">${r.recipe_title}</p></div>`).join('');
+    async function doChat() {
+        const inp = document.getElementById("chat-in");
+        const txt = inp.value.trim();
+        if(!txt) return;
+        appendMsg(txt, 'mb-u');
+        inp.value = "";
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({messages: [{role:"user", content:txt}]})
+            });
+            const data = await res.json();
+            appendMsg(data.reply, 'mb-b');
+        } catch(e) { appendMsg("Sage is offline.", 'mb-b'); }
+    }
+
+    function appendMsg(txt, cls) {
+        const div = document.createElement("div");
+        div.className = (cls === 'mb-u' ? 'bg-emerald-500 text-black self-end' : 'bg-white/10 text-slate-200 self-start') + " p-3 rounded-2xl max-w-[85%] text-[11px] font-bold shadow-lg";
+        div.innerText = txt;
+        const box = document.getElementById("chat-msgs");
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
     }
 </script>
 </body>
