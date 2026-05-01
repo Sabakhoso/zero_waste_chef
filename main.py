@@ -7,8 +7,11 @@ from groq import Groq
 
 app = FastAPI(title="Zero-Waste AI Chef")
 
+# Ensure static folder exists
 if not os.path.exists("static"):
     os.makedirs("static")
+
+# Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
@@ -21,7 +24,8 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat")
 async def chat_with_sage(req: ChatRequest):
     api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key: return {"reply": "API Key missing."}
+    if not api_key: 
+        return {"reply": "API Key is missing in Hugging Face Secrets."}
     try:
         client = Groq(api_key=api_key)
         system_msg = {
@@ -35,7 +39,7 @@ async def chat_with_sage(req: ChatRequest):
         )
         return {"reply": response.choices[0].message.content}
     except Exception as e:
-        return {"reply": f"Error: {str(e)}"}
+        return {"reply": f"Sage Error: {str(e)}"}
 
 class IngredientInput(BaseModel):
     ingredients: str
@@ -43,6 +47,8 @@ class IngredientInput(BaseModel):
 @app.post("/api/recipe")
 async def generate_recipe(payload: IngredientInput):
     api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        return {"recipe_title": "Configuration Error", "recipe_body": "API Key missing.", "waste_tip": "Add GROQ_API_KEY to Secrets."}
     try:
         client = Groq(api_key=api_key)
         prompt = f"Provide a recipe for: {payload.ingredients}. Start with a Title, then Ingredients, then Steps."
